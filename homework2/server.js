@@ -8,7 +8,6 @@ let names = [];
 if (fs.existsSync(dbNames)) {
   names = JSON.parse(fs.readFileSync(dbNames, "utf8"));
   console.log(names);
-  // names.foreach((item) => console.log("name:", item.name, ", IP: ", item.IP));
 };
 
 const requestHandler = (request, response) => {
