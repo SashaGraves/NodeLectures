@@ -10,29 +10,31 @@ if (fs.existsSync(dbNames)) {
   console.log(names);
 };
 
-app.post('/', requestHandler);
+const checkRequest = (req, res, next) => {
+  const headerIsValid = req.headers['iknowyoursecret'] === 'TheOwlsAreNotWhatTheySeem';
+  if (!req.query.name || !headerIsValid) {
+    res.send('Do you know my secret?');
+  }
+  next();
+};
+
+const greetingResponse = (req, res, next) => {
+  const client = {
+    name: req.query.name,
+    IP: req.ip,
+  };
+  names.push(client);
+  fs.writeFile(dbNames, JSON.stringify(names), (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+  const messageList = names.map((item) => `Hello, ${item.name} with IP ${item.IP}!`);
+  res.send(messageList.join(" "));
+};
+
+app.post('/', checkRequest, greetingResponse);
 
 app.listen(port, () => {
   console.log('Server listening on 8080 port')
 });
-
-const requestHandler = (req, res) => {
-  const queryObject = req.query;
-  const headerIsValid = req.headers['iknowyoursecret'] === 'TheOwlsAreNotWhatTheySeem';
-  if (queryObject.name && headerIsValid) {
-    const client = {
-      name: queryObject.name,
-      IP: req.ip,
-    };
-    names.push(client);
-    fs.writeFile(dbNames, JSON.stringify(names), (err) => {
-      if (err) {
-        throw err;
-      }
-    });
-    const messageList = names.map((item) => `Hello, ${item.name} with IP ${item.IP}!`);
-    res.send(messageList.join(" "));
-  } else {
-    res.send('And do you know my secret?');
-  }
-};
