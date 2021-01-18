@@ -10,15 +10,15 @@ if (fs.existsSync(dbNames)) {
   console.log(names);
 };
 
-const checkRequest = (req, res, next) => {
+app.post('/', (req, res, next) => {
   const headerIsValid = req.headers['iknowyoursecret'] === 'TheOwlsAreNotWhatTheySeem';
   if (!req.query.name || !headerIsValid) {
     res.send('Do you know my secret?');
   }
   next();
-};
+});
 
-const greetingResponse = (req, res, next) => {
+app.post('/', (req, res, next) => {
   const client = {
     name: req.query.name,
     IP: req.ip,
@@ -31,9 +31,7 @@ const greetingResponse = (req, res, next) => {
   });
   const messageList = names.map((item) => `Hello, ${item.name} with IP ${item.IP}!`);
   res.send(messageList.join(" "));
-};
-
-app.post('/', checkRequest, greetingResponse);
+});
 
 app.listen(port, () => {
   console.log('Server listening on 8080 port')
