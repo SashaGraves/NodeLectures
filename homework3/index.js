@@ -10,12 +10,16 @@ if (fs.existsSync(dbNames)) {
   console.log(names);
 };
 
-app.post('/', (req, res, next) => {
+app.use('/', (req, res, next) => {
   const headerIsValid = req.headers['iknowyoursecret'] === 'TheOwlsAreNotWhatTheySeem';
   if (!req.query.name || !headerIsValid) {
     res.send('Do you know my secret?');
   }
   next();
+});
+
+app.get('/', (req, res, next) => {
+  res.send('The secret is in using post-request');
 });
 
 app.post('/', (req, res, next) => {
