@@ -14,8 +14,9 @@ const checkRequest = (req, res, next) => {
   const headerIsValid = req.headers['iknowyoursecret'] === 'TheOwlsAreNotWhatTheySeem';
   if (!req.query.name || !headerIsValid) {
     res.send('Do you know my secret?');
+  } else {
+    next();
   }
-  next();
 };
 
 const greetingResponse = (req, res, next) => {
