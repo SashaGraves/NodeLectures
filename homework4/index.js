@@ -1,14 +1,28 @@
 const express = require('express');
-const fs = require('fs');
+const mongoose = require('mongoose');
+
 const port = 8080;
-const dbNames = "./names.json"
 const app = express();
 
+mongoose.connect('mongodb://127.0.0.1/nodelect');
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+const UserSchema = new mongoose.Schema(
+  {name: String,
+  IP: String}
+);
+const User = mongoose.model('User', UserSchema);
+
 let names = [];
-if (fs.existsSync(dbNames)) {
-  names = JSON.parse(fs.readFileSync(dbNames, "utf8"));
-  console.log(names);
-};
+User.find({}, 'name IP', function(err, usersList) {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log(usersList)
+    names = usersList;
+  }
+});
 
 const checkRequest = (req, res, next) => {
   const headerIsValid = req.headers['iknowyoursecret'] === 'TheOwlsAreNotWhatTheySeem';
@@ -24,12 +38,10 @@ const greetingResponse = (req, res, next) => {
     name: req.query.name,
     IP: req.ip,
   };
-  names.push(client);
-  fs.writeFile(dbNames, JSON.stringify(names), (err) => {
-    if (err) {
-      throw err;
-    }
-  });
+  
+  const user = new User(client);
+  user.save(function(err) {if (err) return console.log(err)});
+  
   const messageList = names.map((item) => `Hello, ${item.name} with IP ${item.IP}!`);
   res.send(messageList.join(" "));
 };
