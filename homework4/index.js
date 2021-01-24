@@ -1,21 +1,11 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const db = require('./db_connection');
 
 const port = 8080;
 const app = express();
 
-mongoose.connect('mongodb://127.0.0.1/nodelect');
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
-const UserSchema = new mongoose.Schema(
-  {name: String,
-  IP: String}
-);
-const User = mongoose.model('User', UserSchema);
-
 let names = [];
-User.find({}, 'name IP', function(err, usersList) {
+db.User.find({}, 'name IP', function(err, usersList) {
   if (err) {
     console.log(err);
   } else {
@@ -29,6 +19,7 @@ const checkRequest = (req, res, next) => {
   if (!req.query.name || !headerIsValid) {
     res.send('Do you know my secret?');
   } else {
+    console.log('HERE');
     next();
   }
 };
@@ -39,9 +30,12 @@ const greetingResponse = (req, res, next) => {
     IP: req.ip,
   };
   
-  const user = new User(client);
-  user.save(function(err) {if (err) return console.log(err)});
+  const user = new db.User(client);
+  user.save(function(err) {
+    if (err) return console.log(err)
+  });
   
+  names.unshift(client);
   const messageList = names.map((item) => `Hello, ${item.name} with IP ${item.IP}!`);
   res.send(messageList.join(" "));
 };

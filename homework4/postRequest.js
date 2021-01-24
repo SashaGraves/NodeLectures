@@ -6,7 +6,7 @@ const options = {
   headers: {
     'IKnowYourSecret': 'TheOwlsAreNotWhatTheySeem',
   },
-  path: '/?name=Alex'
+  path: '/?name=Fui'
 };
 
 const postRequest = http.request(options, (response) => {
