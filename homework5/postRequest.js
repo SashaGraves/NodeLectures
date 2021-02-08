@@ -1,8 +1,8 @@
 const axios = require('axios');
 axios.post('http://localhost:8080/token', 
 { 
-  username: 'Aleksandra Kulikova',
-  password: 'Aleksandra_Kulikova@epam.com'
+  username: 'Aleksandra_Kulikova@epam.com',
+  password: 'Aleksandra_Kulikova'
 })
 .then(res => {
   console.log(res.data);
